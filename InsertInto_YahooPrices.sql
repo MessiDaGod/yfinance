@@ -1,16 +1,11 @@
-use master;
-go
+IF OBJECT_ID('spInsertYahooPrices') IS NOT NULL 
+DROP PROC spInsertYahooPrices
+GO
 
-if not exists (
-		select db_id()
-		from sys.databases
-		where name = 'yahoo'
-		)
-	create database yahoo
-go
-
-use yahoo;
-go
+CREATE PROC spInsertYahooPrices
+AS 
+BEGIN 
+set nocount on;
 
 if OBJECT_ID('yahooprices') is null
 	create table yahooprices (
@@ -27,7 +22,6 @@ if OBJECT_ID('yahooprices') is null
 
 if OBJECT_ID('tempdb..#yahooprices') is not null
 	drop table #yahooprices
-go 
 
 create table #yahooprices (
 	[Date] date null
@@ -41,7 +35,7 @@ create table #yahooprices (
 	) on [PRIMARY]
 
 bulk insert #yahooprices
-from '/home/messi/Projects/yfinance/BTC-USD.csv' with (
+from 'C:\Users\jshakely\source\repos\yfinance\BTC-USD.csv' with (
 		fieldterminator = ','
 		,firstrow = 2
 		,FORMAT = 'CSV'
@@ -69,5 +63,5 @@ select ya.[Date]
 from #yahooprices ya
 where 1 = 1
 
-select *
-from yahooprices;
+END
+GO
